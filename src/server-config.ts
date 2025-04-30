@@ -6,6 +6,9 @@ import { FastifyInstance } from 'fastify';
 import { fastifyRedis } from '@fastify/redis';
 import swaggerPlugin from './plugins/swagger/swagger-plugin.js';
 import { Server } from 'socket.io';
+import multipart from '@fastify/multipart';
+import fastifyStatic from '@fastify/static';
+import path from 'path';
 
 export async function configureServer(server: FastifyInstance) {
   server.setValidatorCompiler(validatorCompiler); // Fastify 유효성 검사기 설정
@@ -17,6 +20,8 @@ export async function registerPlugins(server: FastifyInstance) {
   await registerRedisPlugin(server); // Redis 플러그인 등록
   await setDiContainer(server); // 의존성 주입 컨테이너 설정
   await registerSwaggerPlugin(server); // Swagger 플러그인 등록
+  await registerFastifyMultipart(server);
+  await registerFastifyStatic(server);
   await server.register(app, { prefix: '/api' }); // REST API 라우트 등록
 }
 
@@ -45,4 +50,19 @@ async function registerRedisPlugin(server: FastifyInstance) {
 
 async function registerSwaggerPlugin(server: FastifyInstance) {
   await server.register(swaggerPlugin);
+}
+
+async function registerFastifyMultipart(server: FastifyInstance) {
+  await server.register(multipart, {
+    limits: {
+      fileSize: 2 * 1024 * 1024, // 2MB
+    },
+  });
+}
+
+async function registerFastifyStatic(server: FastifyInstance) {
+  await server.register(fastifyStatic, {
+    root: path.join('/goinfre/inryu/image-server/uploads/avatars'),
+    prefix: '/api/v1/uploads/avatars/', // 브라우저에서 접근하는 경로
+  });
 }
