@@ -6,9 +6,9 @@ import { FastifyInstance } from 'fastify';
 import { fastifyRedis } from '@fastify/redis';
 import swaggerPlugin from './plugins/swagger/swagger-plugin.js';
 import { Server } from 'socket.io';
+import { producer } from './plugins/kafka.js';
 import multipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
-import path from 'path';
 
 export async function configureServer(server: FastifyInstance) {
   server.setValidatorCompiler(validatorCompiler); // Fastify 유효성 검사기 설정
@@ -36,6 +36,7 @@ export async function setupGracefulShutdown(server: FastifyInstance, socket: Ser
       }
       await server.close();
       await socket.close();
+      await producer.disconnect();
     },
   );
 }
@@ -62,7 +63,7 @@ async function registerFastifyMultipart(server: FastifyInstance) {
 
 async function registerFastifyStatic(server: FastifyInstance) {
   await server.register(fastifyStatic, {
-    root: path.join('/goinfre/inryu/image-server/uploads/avatars'),
+    root: process.env.UPLOADS_PATH!,
     prefix: '/api/v1/uploads/avatars/', // 브라우저에서 접근하는 경로
   });
 }

@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import ImagesController from './images.controller.js';
 import { addRoutes, Route } from '../../../plugins/router.js';
-import { coreResponseSchema } from '../../common/schema/core.schema.js';
+import { uploadAvatarResponseSchema } from './schemas/upload-avatar.schema.js';
 
 export default async function imagesRoutes(fastify: FastifyInstance) {
   const imagesController: ImagesController = fastify.diContainer.resolve('imagesController');
@@ -15,7 +15,7 @@ export default async function imagesRoutes(fastify: FastifyInstance) {
           tags: ['images'],
           description: '아바타 이미지 업로드',
           response: {
-            200: coreResponseSchema,
+            200: uploadAvatarResponseSchema,
           },
         },
         auth: true,

@@ -5,7 +5,8 @@ export default class ImagesController {
   constructor(private readonly imagesService: ImagesService) {}
 
   uploadAvatar = async (request: FastifyRequest, reply: FastifyReply) => {
-    const result = await this.imagesService.uploadAvatar(request);
+    const data = await request.file();
+    const result = await this.imagesService.uploadAvatar(request.userId, data);
     reply.code(200).send(result);
   };
 }
