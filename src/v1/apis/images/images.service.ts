@@ -34,7 +34,10 @@ export default class ImagesService {
 
     const ext = data.filename.split('.').pop();
     const filename = `${userId}-${uuidv4()}.${ext}`;
-    const uploadDir = '../../../uploads/avatars';
+    const uploadDir = process.env.UPLOADS_PATH;
+    if (!uploadDir) {
+      throw new InternalServerException('UPLOADS_PATH 환경변수가 설정되어 있지 않습니다.');
+    }
 
     if (!this.ensureUploadDir(uploadDir)) {
       throw new InternalServerException('폴더 생성에 실패했습니다.');

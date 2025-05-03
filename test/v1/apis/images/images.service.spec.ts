@@ -41,6 +41,7 @@ describe('ImagesService', () => {
   };
 
   const mockUserId = 1;
+  process.env.UPLOADS_PATH = '/some/path';
 
   it('이미지 업로드 성공', async () => {
     const mockFile = createMockFile({ filename: 'avatar.png', mimetype: 'image/png' });
@@ -70,22 +71,31 @@ describe('ImagesService', () => {
     const mockFile = createMockFile({ mimetype: 'image/png', truncated: true });
     await expect(imagesService.uploadAvatar(mockUserId, mockFile)).rejects.toThrow(BadRequestException);
   });
-
+  
   it('디렉토리 생성 실패 시 InternalServerException 발생', async () => {
     const mockFile = createMockFile({ filename: 'avatar.png' });
     (fs.existsSync as vi.Mock).mockReturnValue(false);
     (fs.mkdirSync as vi.Mock).mockImplementation(() => { throw new Error(); });
-  
+    
     await expect(imagesService.uploadAvatar(mockUserId, mockFile)).rejects.toThrow(InternalServerException);
   });
-
+  
   it('파일 저장 실패 시 InternalServerException 발생', async () => {
     const mockFile = createMockFile({ filename: 'avatar.png' });
-  
+    
     (fs.existsSync as vi.Mock).mockReturnValue(true);
     (fs.createWriteStream as vi.Mock).mockReturnValue({});
     const mockPump = vi.fn().mockRejectedValue(new Error());
     (promisify as vi.Mock).mockReturnValue(mockPump);
+    
+    await expect(imagesService.uploadAvatar(mockUserId, mockFile)).rejects.toThrow(InternalServerException);
+  });
+
+  it('UPLOADS_PATH 환경변수가 설정되지 않으면 InternalServerException 발생', async () => {
+    const mockFile = createMockFile({ filename: 'avatar.png' });
+  
+    // 환경변수 설정을 제거하여 UPLOADS_PATH가 없도록 설정
+    delete process.env.UPLOADS_PATH;
   
     await expect(imagesService.uploadAvatar(mockUserId, mockFile)).rejects.toThrow(InternalServerException);
   });
