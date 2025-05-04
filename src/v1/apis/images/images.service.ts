@@ -15,6 +15,18 @@ import { MultipartFile } from '@fastify/multipart';
 import { sendAvatarUploadEvent } from '../../kafka/producers/image.producer.js';
 
 export default class ImagesService {
+  private readonly uploadDir: string;
+  private readonly baseUrl: string;
+
+  constructor() {
+    const uploadPath = process.env.UPLOADS_PATH;
+    if (!uploadPath) {
+      throw new InternalServerException('UPLOADS_PATH 환경변수가 설정되어 있지 않습니다.');
+    }
+    this.uploadDir = uploadPath;
+    this.baseUrl = process.env.GATEWAY_URL || 'http://localhost:3000';
+  }
+
   async uploadAvatar(
     userId: number,
     data: MultipartFile | undefined,
@@ -34,27 +46,19 @@ export default class ImagesService {
 
     const ext = data.filename.split('.').pop();
     const filename = `${userId}-${uuidv4()}.${ext}`;
-    const uploadDir = process.env.UPLOADS_PATH;
-    if (!uploadDir) {
-      throw new InternalServerException('UPLOADS_PATH 환경변수가 설정되어 있지 않습니다.');
-    }
-
-    if (!this.ensureUploadDir(uploadDir)) {
+    if (!this.ensureUploadDir(this.uploadDir)) {
       throw new InternalServerException('폴더 생성에 실패했습니다.');
     }
 
-    const pump = promisify(pipeline);
-    const filepath = path.join(uploadDir, filename);
-    const result = await pump(data.file, fs.createWriteStream(filepath)) //pump()로 안정적으로 복사
-      .then(() => true)
-      .catch(() => false);
-    if (!result) {
+    const filepath = path.join(this.uploadDir, filename);
+
+    const saved = await this.saveFile(data.file, filepath);
+    if (!saved) {
       throw new InternalServerException('파일 저장에 실패했습니다.');
     }
 
     // 서버에서 접근할 수 있는 URL을 설정
-    const imageUrl = `http://localhost:3000/api/v1/uploads/avatars/${filename}`;
-    console.log('imageUrl: ', imageUrl);
+    const imageUrl = `${this.baseUrl}/api/v1/uploads/avatars/${filename}`;
 
     await sendAvatarUploadEvent({ userId: userId, avatarUrl: imageUrl });
 
@@ -73,5 +77,12 @@ export default class ImagesService {
     } catch (err) {
       return false;
     }
+  }
+
+  private async saveFile(file: NodeJS.ReadableStream, filepath: string): Promise<boolean> {
+    const pump = promisify(pipeline);
+    return await pump(file, fs.createWriteStream(filepath))
+      .then(() => true)
+      .catch(() => false);
   }
 }

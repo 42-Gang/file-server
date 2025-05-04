@@ -19,6 +19,7 @@ describe('ImagesService', () => {
   let imagesService: ImagesService;
 
   beforeEach(() => {
+    process.env.UPLOADS_PATH = '/some/path';
     imagesService = new ImagesService;
   });
 
@@ -41,7 +42,6 @@ describe('ImagesService', () => {
   };
 
   const mockUserId = 1;
-  process.env.UPLOADS_PATH = '/some/path';
 
   it('이미지 업로드 성공', async () => {
     const mockFile = createMockFile({ filename: 'avatar.png', mimetype: 'image/png' });
@@ -51,7 +51,7 @@ describe('ImagesService', () => {
     (fs.createWriteStream as vi.Mock).mockReturnValue({});
     const mockPump = vi.fn().mockResolvedValue(undefined);
     (promisify as vi.Mock).mockReturnValue(mockPump);
-    // Mock HTTP call
+
     const result = await imagesService.uploadAvatar(mockUserId, mockFile);
 
     expect(result.status).toBe(STATUS.SUCCESS);
@@ -97,6 +97,6 @@ describe('ImagesService', () => {
     // 환경변수 설정을 제거하여 UPLOADS_PATH가 없도록 설정
     delete process.env.UPLOADS_PATH;
   
-    await expect(imagesService.uploadAvatar(mockUserId, mockFile)).rejects.toThrow(InternalServerException);
+    await expect(() => new ImagesService()).toThrow(InternalServerException);
   });
 });
