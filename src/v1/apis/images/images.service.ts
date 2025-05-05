@@ -34,30 +34,22 @@ export default class ImagesService {
     if (!data) {
       throw new NotFoundException('파일을 선택해주세요.');
     }
-
     const allowedTypes = ['image/jpeg', 'image/png'];
     if (!allowedTypes.includes(data.mimetype)) {
       throw new BadRequestException('PNG 또는 JPEG 파일만 사용할 수 있습니다.');
     }
-
     if (data.file.truncated) {
       throw new BadRequestException('파일 크기(최대 2MB)를 초과했습니다.');
     }
 
+    this.ensureUploadDir(this.uploadDir);
+
     const ext = data.filename.split('.').pop();
     const filename = `${userId}-${uuidv4()}.${ext}`;
-    if (!this.ensureUploadDir(this.uploadDir)) {
-      throw new InternalServerException('폴더 생성에 실패했습니다.');
-    }
-
     const filepath = path.join(this.uploadDir, filename);
 
-    const saved = await this.saveFile(data.file, filepath);
-    if (!saved) {
-      throw new InternalServerException('파일 저장에 실패했습니다.');
-    }
+    await this.saveFile(data.file, filepath);
 
-    // 서버에서 접근할 수 있는 URL을 설정
     const imageUrl = `${this.baseUrl}/api/v1/uploads/avatars/${filename}`;
 
     await sendAvatarUploadEvent({ userId: userId, avatarUrl: imageUrl });
@@ -68,21 +60,22 @@ export default class ImagesService {
     };
   }
 
-  private ensureUploadDir(dirPath: string): boolean {
-    try {
-      if (!fs.existsSync(dirPath)) {
+  private ensureUploadDir(dirPath: string): void {
+    if (!fs.existsSync(dirPath)) {
+      try {
         fs.mkdirSync(dirPath, { recursive: true });
+      } catch (err) {
+        throw new InternalServerException('폴더 생성에 실패했습니다.');
       }
-      return true;
-    } catch (err) {
-      return false;
     }
   }
 
-  private async saveFile(file: NodeJS.ReadableStream, filepath: string): Promise<boolean> {
+  private async saveFile(file: NodeJS.ReadableStream, filepath: string): Promise<void> {
     const pump = promisify(pipeline);
-    return await pump(file, fs.createWriteStream(filepath))
-      .then(() => true)
-      .catch(() => false);
+    try {
+      await pump(file, fs.createWriteStream(filepath));
+    } catch {
+      throw new InternalServerException('파일 저장에 실패했습니다.');
+    }
   }
 }
