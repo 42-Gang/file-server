@@ -50,7 +50,7 @@ export default class ImagesService {
 
     await this.saveFile(data.file, filepath);
 
-    const imageUrl = `${this.baseUrl}/api/v1/uploads/avatars/${filename}`;
+    const imageUrl = '/api/v1/uploads/avatars/' + filename;
 
     await sendAvatarUploadEvent({ userId: userId, avatarUrl: imageUrl });
 
