@@ -16,6 +16,8 @@ export async function setDiContainer(server: FastifyInstance) {
     logger: asValue(server.log),
     redisClient: asValue(server.redis),
     httpClient: asValue(gotClient),
+
+    uploadDir: asValue(process.env.UPLOADS_DIR),
   });
 
   const NODE_EXTENSION = process.env.NODE_ENV == 'dev' ? 'ts' : 'js';

@@ -20,7 +20,7 @@ describe('ImagesService', () => {
 
   beforeEach(() => {
     process.env.UPLOADS_PATH = '/some/path';
-    imagesService = new ImagesService;
+    imagesService = new ImagesService(process.env.UPLOADS_PATH);
   });
 
   const createMockFile = (options: Partial<MultipartFile & { truncated?: boolean }>): MultipartFile => {

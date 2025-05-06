@@ -63,7 +63,7 @@ async function registerFastifyMultipart(server: FastifyInstance) {
 
 async function registerFastifyStatic(server: FastifyInstance) {
   await server.register(fastifyStatic, {
-    root: process.env.UPLOADS_PATH!,
+    root: process.env.UPLOADS_DIR!,
     prefix: '/api/v1/uploads/avatars/', // 브라우저에서 접근하는 경로
   });
 }
