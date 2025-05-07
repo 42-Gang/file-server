@@ -3,6 +3,7 @@ import { diContainer, fastifyAwilixPlugin } from '@fastify/awilix';
 import { asClass, asValue, Lifetime } from 'awilix';
 import prisma from './prisma.js';
 import { gotClient } from './http.client.js';
+import StorageService from '../v1/apis/images/local-storage.service.js';
 
 export async function setDiContainer(server: FastifyInstance) {
   server.register(fastifyAwilixPlugin, {
@@ -17,7 +18,8 @@ export async function setDiContainer(server: FastifyInstance) {
     redisClient: asValue(server.redis),
     httpClient: asValue(gotClient),
 
-    uploadDir: asValue(process.env.UPLOADS_DIR),
+    avatarUploadDir: asValue(process.env.AVATAR_UPLOADS_DIR),
+    storageService: asClass(StorageService).singleton(),
   });
 
   const NODE_EXTENSION = process.env.NODE_ENV == 'dev' ? 'ts' : 'js';
