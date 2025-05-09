@@ -19,7 +19,9 @@ export async function setDiContainer(server: FastifyInstance) {
     httpClient: asValue(gotClient),
 
     avatarUploadDir: asValue(process.env.AVATAR_UPLOADS_DIR),
-    storageService: asClass(StorageService).singleton(),
+    storageService: asClass(StorageService, {
+      injectionMode: 'CLASSIC',
+    }).singleton(),
   });
 
   const NODE_EXTENSION = process.env.NODE_ENV == 'dev' ? 'ts' : 'js';
