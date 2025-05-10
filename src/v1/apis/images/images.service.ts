@@ -7,7 +7,7 @@ import { sendAvatarUploadEvent } from '../../kafka/producers/image.producer.js';
 import LocalStorageService from './local-storage.service.js';
 
 export default class ImagesService {
-  constructor(private readonly storageService: LocalStorageService) {}
+  constructor(private readonly localStorageService: LocalStorageService) {}
 
   async uploadAvatar(
     userId: number,
@@ -24,7 +24,7 @@ export default class ImagesService {
       throw new BadRequestException('파일 크기(최대 2MB)를 초과했습니다.');
     }
 
-    const filename = await this.storageService.saveFile(data, userId);
+    const filename = await this.localStorageService.saveFile(data, userId);
 
     const imageUrl = '/api/v1/uploads/avatars/' + filename;
     await sendAvatarUploadEvent({ userId: userId, avatarUrl: imageUrl });
