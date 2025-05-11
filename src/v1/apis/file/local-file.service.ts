@@ -1,7 +1,6 @@
 import FileService from './file.service.js';
 import path from 'path';
 import fs from 'fs';
-import { NotFoundException } from '../../common/exceptions/core.error.js';
 
 export default class LocalFileService implements FileService {
   constructor(
@@ -14,14 +13,6 @@ export default class LocalFileService implements FileService {
     fs.mkdirSync(path.dirname(fullPath), { recursive: true });
     fs.writeFileSync(fullPath, fileBuffer);
     return this.getUrl(key);
-  }
-
-  async delete(key: string): Promise<void> {
-    const fullPath = path.join(this.baseDir, key);
-    if (!fs.existsSync(fullPath)) {
-      throw new NotFoundException('File not found');
-    }
-    fs.unlinkSync(fullPath);
   }
 
   getUrl(key: string): string {

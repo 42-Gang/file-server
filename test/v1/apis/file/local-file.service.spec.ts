@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, afterEach } from 'vitest';
 import fs from 'fs';
 import path from 'path';
 import LocalFileService from '../../../../src/v1/apis/file/local-file.service.js';
-import { NotFoundException } from '../../../../src/v1/common/exceptions/core.error.js';
 
 const baseDir = '/Users/woongbishin/WebstormProjects/file-server/uploads';
 const baseUrl = 'http://localhost:3000';
@@ -29,16 +28,6 @@ describe('LocalFileService', () => {
     expect(fs.existsSync(testPath)).toBe(true);
     expect(result).toBe(`${baseUrl}/${testKey}`);
     expect(fs.readFileSync(testPath).toString()).toBe('test message');
-  });
-
-  it('delete는 파일을 삭제한다', async () => {
-    await service.upload(testContent, testKey);
-    await service.delete(testKey);
-    expect(fs.existsSync(testPath)).toBe(false);
-  });
-
-  it('delete는 없는 파일 삭제 시 NotFoundException을 던진다', async () => {
-    await expect(service.delete(testKey)).rejects.toThrow(NotFoundException);
   });
 
   it('getUrl은 올바른 URL을 반환한다', () => {
