@@ -7,6 +7,7 @@ import { sendAvatarUploadEvent } from '../../kafka/producers/image.producer.js';
 import LocalStorageService from './local-storage.service.js';
 
 const ALLOWED_IMAGE_MIME_TYPES = ['image/jpeg', 'image/png'];
+const AVATAR_UPLOAD_URL_PREFIX = '/api/v1/uploads/avatars/';
 
 export default class ImagesService {
   constructor(private readonly localStorageService: LocalStorageService) {}
@@ -19,7 +20,7 @@ export default class ImagesService {
 
     const filename = await this.localStorageService.saveFile(avatarFile, userId);
 
-    const imageUrl = '/api/v1/uploads/avatars/' + filename;
+    const imageUrl = AVATAR_UPLOAD_URL_PREFIX + filename;
     await sendAvatarUploadEvent({ userId: userId, avatarUrl: imageUrl });
 
     return {
@@ -33,7 +34,7 @@ export default class ImagesService {
       throw new BadRequestException('PNG 또는 JPEG 파일만 사용할 수 있습니다.');
     }
     if (data.file.truncated) {
-      throw new BadRequestException('파일 크기(최대 2MB)를 초과했습니다.');
+      throw new BadRequestException('파일 크기(최대 8MB)를 초과했습니다.');
     }
   }
 }
