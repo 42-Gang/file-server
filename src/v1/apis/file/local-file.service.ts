@@ -1,10 +1,18 @@
 import FileService from './file.service.js';
+import path from 'path';
+import fs from 'fs';
 
 export default class LocalFileService implements FileService {
-  upload(fileBuffer: Buffer, key: string): Promise<void> {
-    console.log(fileBuffer);
-    console.log(key);
-    throw new Error('Method not implemented.');
+  constructor(
+    private readonly baseDir: string,
+    private readonly baseUrl: string,
+  ) {}
+
+  async upload(fileBuffer: Buffer, key: string): Promise<string> {
+    const fullPath = path.join(this.baseDir, key);
+    fs.mkdirSync(path.dirname(fullPath), { recursive: true });
+    fs.writeFileSync(fullPath, fileBuffer);
+    return this.getUrl(key);
   }
 
   delete(key: string): Promise<void> {
@@ -12,6 +20,6 @@ export default class LocalFileService implements FileService {
   }
 
   getUrl(key: string): string {
-    throw new Error('Method not implemented.');
+    return key;
   }
 }

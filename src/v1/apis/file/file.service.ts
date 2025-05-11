@@ -1,5 +1,5 @@
 export default interface FileService {
-  upload(fileBuffer: Buffer, key: string): Promise<void>;
+  upload(fileBuffer: Buffer, key: string): Promise<string>;
 
   delete(key: string): Promise<void>;
 
