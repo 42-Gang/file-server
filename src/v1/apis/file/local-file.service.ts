@@ -1,15 +1,17 @@
 import FileService from './file.service.js';
 
 export default class LocalFileService implements FileService {
-  upload(buffer: Buffer, path: string): Promise<void> {
+  upload(fileBuffer: Buffer, key: string): Promise<void> {
+    console.log(fileBuffer);
+    console.log(key);
     throw new Error('Method not implemented.');
   }
 
-  delete(path: string): Promise<void> {
+  delete(key: string): Promise<void> {
     throw new Error('Method not implemented.');
   }
 
-  getUrl(path: string): string {
+  getUrl(key: string): string {
     throw new Error('Method not implemented.');
   }
 }
