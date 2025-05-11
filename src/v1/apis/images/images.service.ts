@@ -1,5 +1,5 @@
 import { TypeOf } from 'zod';
-import { NotFoundException, BadRequestException } from '../../common/exceptions/core.error.js';
+import { BadRequestException } from '../../common/exceptions/core.error.js';
 import { STATUS } from '../../common/constants/status.js';
 import { uploadAvatarResponseSchema } from './schemas/upload-avatar.schema.js';
 import { MultipartFile } from '@fastify/multipart';
@@ -11,20 +11,17 @@ export default class ImagesService {
 
   async uploadAvatar(
     userId: number,
-    data: MultipartFile | undefined,
+    avatarFile: MultipartFile,
   ): Promise<TypeOf<typeof uploadAvatarResponseSchema>> {
-    if (!data) {
-      throw new NotFoundException('파일을 선택해주세요.');
-    }
     const allowedTypes = ['image/jpeg', 'image/png'];
-    if (!allowedTypes.includes(data.mimetype)) {
+    if (!allowedTypes.includes(avatarFile.mimetype)) {
       throw new BadRequestException('PNG 또는 JPEG 파일만 사용할 수 있습니다.');
     }
-    if (data.file.truncated) {
+    if (avatarFile.file.truncated) {
       throw new BadRequestException('파일 크기(최대 2MB)를 초과했습니다.');
     }
 
-    const filename = await this.localStorageService.saveFile(data, userId);
+    const filename = await this.localStorageService.saveFile(avatarFile, userId);
 
     const imageUrl = '/api/v1/uploads/avatars/' + filename;
     await sendAvatarUploadEvent({ userId: userId, avatarUrl: imageUrl });
