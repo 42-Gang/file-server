@@ -7,11 +7,7 @@ import { promisify } from 'util';
 import { pipeline } from 'stream';
 
 export default class LocalStorageService {
-  constructor(private readonly avatarUploadDir: string) {
-    if (!avatarUploadDir) {
-      throw new InternalServerException('AVATAR_UPLOADS_DIR 환경변수가 설정되어 있지 않습니다.');
-    }
-  }
+  constructor(private readonly avatarUploadDir: string) {}
 
   async saveFile(data: MultipartFile, userId: number): Promise<string> {
     this.ensureUploadDir(this.avatarUploadDir);

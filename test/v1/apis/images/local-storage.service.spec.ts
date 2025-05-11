@@ -70,9 +70,4 @@ describe('LocalStorageService', () => {
     const result = await localStorageService.saveFile(mockFile, 1);
     expect(result).toMatch(/^\d{1}-[a-f0-9\-]{36}\.png$/);
   });
-
-  it('UPLOADS_PATH가 없으면 예외 발생', () => {
-    delete process.env.AVATAR_UPLOADS_DIR;
-    expect(() => new LocalStorageService()).toThrow(InternalServerException);
-  });
 });

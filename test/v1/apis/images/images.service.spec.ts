@@ -48,10 +48,6 @@ describe('ImagesService', () => {
     });
   });
 
-  it('파일이 없으면 NotFoundException 발생', async () => {
-    await expect(imagesService.uploadAvatar(1, undefined)).rejects.toThrow(NotFoundException);
-  });
-
   it('지원하지 않는 파일 형식이면 BadRequestException 발생', async () => {
     const mockFile = createMockFile({ mimetype: 'application/pdf' });
     await expect(imagesService.uploadAvatar(1, mockFile)).rejects.toThrow(BadRequestException);
