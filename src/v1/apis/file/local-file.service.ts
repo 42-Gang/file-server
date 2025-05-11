@@ -25,6 +25,6 @@ export default class LocalFileService implements FileService {
   }
 
   getUrl(key: string): string {
-    return path.join(this.baseUrl, key);
+    return new URL(key, this.baseUrl).toString();
   }
 }
