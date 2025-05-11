@@ -15,4 +15,13 @@ describe('LocalFileService', () => {
     const result = await service.upload(Buffer.from('test message'), 'test.txt');
     console.log(result);
   });
+
+  it('delete 테스트', async () => {
+    await service.delete('test.txt');
+  });
+
+  it('getUrl 테스트', () => {
+    const result = service.getUrl('test.txt');
+    expect(result).toBe('http://localhost:3000/test.txt');
+  });
 });
