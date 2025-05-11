@@ -6,6 +6,8 @@ import { MultipartFile } from '@fastify/multipart';
 import { sendAvatarUploadEvent } from '../../kafka/producers/image.producer.js';
 import LocalStorageService from './local-storage.service.js';
 
+const ALLOWED_IMAGE_MIME_TYPES = ['image/jpeg', 'image/png'];
+
 export default class ImagesService {
   constructor(private readonly localStorageService: LocalStorageService) {}
 
@@ -13,13 +15,7 @@ export default class ImagesService {
     userId: number,
     avatarFile: MultipartFile,
   ): Promise<TypeOf<typeof uploadAvatarResponseSchema>> {
-    const allowedTypes = ['image/jpeg', 'image/png'];
-    if (!allowedTypes.includes(avatarFile.mimetype)) {
-      throw new BadRequestException('PNG 또는 JPEG 파일만 사용할 수 있습니다.');
-    }
-    if (avatarFile.file.truncated) {
-      throw new BadRequestException('파일 크기(최대 2MB)를 초과했습니다.');
-    }
+    this.validateFile(avatarFile);
 
     const filename = await this.localStorageService.saveFile(avatarFile, userId);
 
@@ -30,5 +26,14 @@ export default class ImagesService {
       status: STATUS.SUCCESS,
       message: '아바타 이미지가 업로드 되었습니다.',
     };
+  }
+
+  private validateFile(data: MultipartFile): void {
+    if (!ALLOWED_IMAGE_MIME_TYPES.includes(data.mimetype)) {
+      throw new BadRequestException('PNG 또는 JPEG 파일만 사용할 수 있습니다.');
+    }
+    if (data.file.truncated) {
+      throw new BadRequestException('파일 크기(최대 2MB)를 초과했습니다.');
+    }
   }
 }
