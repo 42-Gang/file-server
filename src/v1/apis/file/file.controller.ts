@@ -18,7 +18,7 @@ export default class FileController {
     const fileBuffer = await file.toBuffer();
 
     const result = await this.localFileService.upload(fileBuffer, key);
-    reply.status(200).send(result);
+    reply.status(201).send(result);
   };
 
   getUrl = async (request: FastifyRequest, reply: FastifyReply) => {
