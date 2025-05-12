@@ -3,9 +3,19 @@ import { addRoutes, Route } from '../../../plugins/router.js';
 import { coreResponseSchema } from '../../common/schema/core.schema.js';
 import FileController from './file.controller.js';
 import { getUrlQuerySchema, getUrlResponseSchema } from './schemas/get-url.schema.js';
+import { fastifyStatic } from '@fastify/static';
 
 export default async function fileRoutes(fastify: FastifyInstance) {
   const fileController: FileController = fastify.diContainer.resolve('fileController');
+  const baseDir: string = fastify.diContainer.resolve('baseDir');
+  if (!baseDir) {
+    throw new Error('baseDir is not defined');
+  }
+
+  fastify.register(fastifyStatic, {
+    root: baseDir,
+  });
+
   const routes: Array<Route> = [
     {
       method: 'POST',
