@@ -1,7 +1,7 @@
 import FileService from './file.service.js';
 import path from 'path';
 import fs from 'fs';
-import { ConflictException } from 'src/v1/common/exceptions/core.error.js';
+import { BadRequestException, ConflictException } from 'src/v1/common/exceptions/core.error.js';
 
 export default class LocalFileService implements FileService {
   constructor(
@@ -17,6 +17,10 @@ export default class LocalFileService implements FileService {
   }
 
   async upload(fileBuffer: Buffer, key: string): Promise<string> {
+    if (!this.isValidFilename(key)) {
+      throw new BadRequestException('유효하지 않은 파일 이름입니다.');
+    }
+
     const fullPath = path.join(this.baseDir, key);
     fs.mkdirSync(path.dirname(fullPath), { recursive: true });
     if (fs.existsSync(fullPath)) {
@@ -28,6 +32,11 @@ export default class LocalFileService implements FileService {
   }
 
   getUrl(key: string): string {
-    return new URL(key, this.baseUrl).toString();
+    return new URL(key, this.baseUrl + '/uploads').toString();
+  }
+
+  private isValidFilename(filename: string): boolean {
+    const invalidPattern = /[\/\\:*?"<>|]/;
+    return !invalidPattern.test(filename) && filename.length <= 255;
   }
 }
