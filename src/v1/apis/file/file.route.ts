@@ -10,7 +10,7 @@ export default async function fileRoutes(fastify: FastifyInstance) {
   const routes: Array<Route> = [
     {
       method: 'POST',
-      url: '/upload',
+      url: '/',
       handler: fileController.upload,
       options: {
         schema: {
@@ -21,7 +21,7 @@ export default async function fileRoutes(fastify: FastifyInstance) {
             200: coreResponseSchema,
           },
         },
-        auth: true,
+        auth: false,
         internalOnly: true,
       },
     },
@@ -38,7 +38,7 @@ export default async function fileRoutes(fastify: FastifyInstance) {
             200: getUrlResponseSchema,
           },
         },
-        auth: true,
+        auth: false,
         internalOnly: true,
       },
     },
