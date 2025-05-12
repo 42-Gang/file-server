@@ -26,7 +26,7 @@ export default async function fileRoutes(fastify: FastifyInstance) {
           tags: ['file'],
           description: '파일 업로드',
           response: {
-            200: uploadResponseSchema,
+            201: uploadResponseSchema,
           },
         },
         auth: false,
