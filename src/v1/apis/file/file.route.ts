@@ -2,7 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { addRoutes, Route } from '../../../plugins/router.js';
 import { coreResponseSchema } from '../../common/schema/core.schema.js';
 import FileController from './file.controller.js';
-import { uploadBodySchema } from './upload.schema.js';
+import { uploadBodySchema } from './schemas/upload.schema.js';
 
 export default async function fileRoutes(fastify: FastifyInstance) {
   const fileController: FileController = fastify.diContainer.resolve('fileController');

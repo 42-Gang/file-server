@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, afterEach } from 'vitest';
 import fs from 'fs';
 import path from 'path';
-import LocalFileService from '../../../../src/v1/apis/file/local-file.service.js';
+import LocalFileService from '../../../../src/v1/apis/file/services/local-file.service.js';
 
 const baseDir = '/Users/woongbishin/WebstormProjects/file-server/uploads';
 const baseUrl = 'http://localhost:3000';

@@ -1,7 +1,7 @@
-import FileService from './file.service.js';
+import FileService from './services/file.service.js';
 import { BadRequestException } from '../../common/exceptions/core.error.js';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { uploadBodySchema } from './upload.schema.js';
+import { uploadBodySchema } from './schemas/upload.schema.js';
 
 export default class FileController {
   constructor(private readonly localFileService: FileService) {}
@@ -15,6 +15,12 @@ export default class FileController {
 
     const body = uploadBodySchema.parse(request.body);
     const result = await this.localFileService.upload(fileBuffer, body.key);
+    reply.status(200).send(result);
+  };
+
+  getUrl = async (request: FastifyRequest, reply: FastifyReply) => {
+    const { key } = request.params as { key: string };
+    const result = this.localFileService.getUrl(key);
     reply.status(200).send(result);
   };
 }
