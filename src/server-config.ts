@@ -52,5 +52,9 @@ async function registerSwaggerPlugin(server: FastifyInstance) {
 }
 
 async function registerFastifyMultipart(server: FastifyInstance) {
-  await server.register(multipart);
+  await server.register(multipart, {
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB
+    },
+  });
 }
