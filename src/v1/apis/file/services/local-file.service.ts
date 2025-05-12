@@ -1,10 +1,10 @@
 import FileService from './file.service.js';
 import path from 'path';
 import fs from 'fs';
-import { BadRequestException, ConflictException } from 'src/v1/common/exceptions/core.error.js';
 import { TypeOf } from 'zod';
 import { uploadResponseSchema } from '../schemas/upload.schema.js';
 import { STATUS } from '../../../common/constants/status.js';
+import { BadRequestException, ConflictException } from '../../../common/exceptions/core.error.js';
 
 export default class LocalFileService implements FileService {
   constructor(
