@@ -6,7 +6,14 @@ export default class LocalFileService implements FileService {
   constructor(
     private readonly baseDir: string,
     private readonly baseUrl: string,
-  ) {}
+  ) {
+    if (!baseDir) {
+      throw new Error('baseDir is required and must be a non-empty string');
+    }
+    if (!baseUrl) {
+      throw new Error('baseUrl is required and must be a non-empty string');
+    }
+  }
 
   async upload(fileBuffer: Buffer, key: string): Promise<string> {
     const fullPath = path.join(this.baseDir, key);

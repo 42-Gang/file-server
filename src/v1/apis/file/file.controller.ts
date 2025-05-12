@@ -1,7 +1,6 @@
 import FileService from './services/file.service.js';
 import { BadRequestException } from '../../common/exceptions/core.error.js';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { uploadBodySchema } from './schemas/upload.schema.js';
 import { getUrlQuerySchema } from './schemas/get-url.schema.js';
 
 export default class FileController {
@@ -12,10 +11,13 @@ export default class FileController {
     if (!file) {
       throw new BadRequestException('파일이 업로드되지 않았습니다.');
     }
+    const key = file.fieldname;
+    if (!key) {
+      throw new BadRequestException('파일 키가 제공되지 않았습니다.');
+    }
     const fileBuffer = await file.toBuffer();
 
-    const body = uploadBodySchema.parse(request.body);
-    const result = await this.localFileService.upload(fileBuffer, body.key);
+    const result = await this.localFileService.upload(fileBuffer, key);
     reply.status(200).send(result);
   };
 
