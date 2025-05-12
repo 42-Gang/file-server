@@ -2,6 +2,7 @@ import FileService from './services/file.service.js';
 import { BadRequestException } from '../../common/exceptions/core.error.js';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { getUrlQuerySchema } from './schemas/get-url.schema.js';
+import { STATUS } from '../../common/constants/status.js';
 
 export default class FileController {
   constructor(private readonly localFileService: FileService) {}
@@ -23,7 +24,12 @@ export default class FileController {
 
   getUrl = async (request: FastifyRequest, reply: FastifyReply) => {
     const query = getUrlQuerySchema.parse(request.query);
-    const result = this.localFileService.getUrl(query.key);
-    reply.status(200).send(result);
+    const url = this.localFileService.getUrl(query.key);
+    reply.status(200).send({
+      status: STATUS.SUCCESS,
+      data: {
+        url,
+      },
+    });
   };
 }
