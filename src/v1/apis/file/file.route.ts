@@ -1,9 +1,9 @@
 import { FastifyInstance } from 'fastify';
 import { addRoutes, Route } from '../../../plugins/router.js';
-import { coreResponseSchema } from '../../common/schema/core.schema.js';
 import FileController from './file.controller.js';
 import { getUrlQuerySchema, getUrlResponseSchema } from './schemas/get-url.schema.js';
 import { fastifyStatic } from '@fastify/static';
+import { uploadResponseSchema } from './schemas/upload.schema.js';
 
 export default async function fileRoutes(fastify: FastifyInstance) {
   const fileController: FileController = fastify.diContainer.resolve('fileController');
@@ -26,7 +26,7 @@ export default async function fileRoutes(fastify: FastifyInstance) {
           tags: ['file'],
           description: '파일 업로드',
           response: {
-            200: coreResponseSchema,
+            200: uploadResponseSchema,
           },
         },
         auth: false,

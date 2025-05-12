@@ -2,6 +2,9 @@ import FileService from './file.service.js';
 import path from 'path';
 import fs from 'fs';
 import { BadRequestException, ConflictException } from 'src/v1/common/exceptions/core.error.js';
+import { TypeOf } from 'zod';
+import { uploadResponseSchema } from '../schemas/upload.schema.js';
+import { STATUS } from '../../../common/constants/status.js';
 
 export default class LocalFileService implements FileService {
   constructor(
@@ -16,7 +19,7 @@ export default class LocalFileService implements FileService {
     }
   }
 
-  async upload(fileBuffer: Buffer, key: string): Promise<string> {
+  async upload(fileBuffer: Buffer, key: string): Promise<TypeOf<typeof uploadResponseSchema>> {
     if (!this.isValidFilename(key)) {
       throw new BadRequestException('유효하지 않은 파일 이름입니다.');
     }
@@ -28,7 +31,12 @@ export default class LocalFileService implements FileService {
     }
 
     fs.writeFileSync(fullPath, fileBuffer);
-    return this.getUrl(key);
+    return {
+      status: STATUS.SUCCESS,
+      data: {
+        url: this.getUrl(key),
+      },
+    };
   }
 
   getUrl(key: string): string {
