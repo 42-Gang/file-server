@@ -26,11 +26,16 @@ export default class LocalFileService implements FileService {
 
     const fullPath = path.join(this.baseDir, key);
     fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-    if (fs.existsSync(fullPath)) {
-      throw new ConflictException('파일이 이미 존재합니다.');
+
+    try {
+      fs.writeFileSync(fullPath, fileBuffer, { flag: 'wx' }); // 파일이 있으면 throw
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code === 'EEXIST') {
+        throw new ConflictException('파일이 이미 존재합니다.');
+      }
+      throw err;
     }
 
-    fs.writeFileSync(fullPath, fileBuffer);
     return {
       status: STATUS.SUCCESS,
       data: {
