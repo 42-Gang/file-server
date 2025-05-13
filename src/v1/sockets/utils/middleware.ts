@@ -8,9 +8,9 @@ type NextFunction = (err?: Error) => void;
 export async function socketMiddleware(socket: Socket, next: NextFunction) {
   try {
     if (process.env.NODE_ENV === 'dev') {
-        socket.data.userId = 1;
-        next();
-        return;
+      socket.data.userId = 1;
+      next();
+      return;
     }
 
     const token = socket.handshake.query.token;

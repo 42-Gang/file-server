@@ -18,6 +18,11 @@ export async function setDiContainer(server: FastifyInstance) {
     httpClient: asValue(gotClient),
   });
 
+  diContainer.register({
+    baseDir: asValue(process.env.BASE_DIR),
+    baseUrl: asValue(process.env.BASE_URL),
+  });
+
   const NODE_EXTENSION = process.env.NODE_ENV == 'dev' ? 'ts' : 'js';
   await diContainer.loadModules(
     [

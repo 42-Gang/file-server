@@ -6,6 +6,8 @@ import { FastifyInstance } from 'fastify';
 import { fastifyRedis } from '@fastify/redis';
 import swaggerPlugin from './plugins/swagger/swagger-plugin.js';
 import { Server } from 'socket.io';
+import { producer } from './plugins/kafka.js';
+import multipart from '@fastify/multipart';
 
 export async function configureServer(server: FastifyInstance) {
   server.setValidatorCompiler(validatorCompiler); // Fastify 유효성 검사기 설정
@@ -17,6 +19,7 @@ export async function registerPlugins(server: FastifyInstance) {
   await registerRedisPlugin(server); // Redis 플러그인 등록
   await setDiContainer(server); // 의존성 주입 컨테이너 설정
   await registerSwaggerPlugin(server); // Swagger 플러그인 등록
+  await registerFastifyMultipart(server);
   await server.register(app, { prefix: '/api' }); // REST API 라우트 등록
 }
 
@@ -31,6 +34,7 @@ export async function setupGracefulShutdown(server: FastifyInstance, socket: Ser
       }
       await server.close();
       await socket.close();
+      await producer.disconnect();
     },
   );
 }
@@ -45,4 +49,12 @@ async function registerRedisPlugin(server: FastifyInstance) {
 
 async function registerSwaggerPlugin(server: FastifyInstance) {
   await server.register(swaggerPlugin);
+}
+
+async function registerFastifyMultipart(server: FastifyInstance) {
+  await server.register(multipart, {
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB
+    },
+  });
 }

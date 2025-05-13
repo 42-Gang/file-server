@@ -1,7 +1,6 @@
 import { FastifyInstance } from 'fastify';
-
-import usersRoutes from './apis/users.route.js';
+import fileRoutes from './apis/file/file.route.js';
 
 export default async function routeV1(fastify: FastifyInstance) {
-  fastify.register(usersRoutes);
+  fastify.register(fileRoutes, { prefix: '/file' });
 }

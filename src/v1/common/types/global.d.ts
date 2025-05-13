@@ -1,5 +1,3 @@
-import { ProcessEnv } from 'process';
-
 export {};
 
 declare global {
@@ -22,6 +20,11 @@ declare global {
       JWT_SECRET: string;
       JWT_EXPIRES_IN: string;
       JWT_REFRESH_EXPIRES_IN: string;
+
+      KAFKA_BROKER: string;
+
+      BASE_DRI: string;
+      BASE_URL: string;
     }
   }
 }
