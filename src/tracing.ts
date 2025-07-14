@@ -24,7 +24,7 @@ const sdk = new NodeSDK({
     url: process.env.JAEGER_ENDPOINT,
     headers: {},
   }),
-  serviceName: 'auth-service',
+  serviceName: 'file-service',
   metricReader: prometheusExporter,
   instrumentations: [getNodeAutoInstrumentations()],
 });
