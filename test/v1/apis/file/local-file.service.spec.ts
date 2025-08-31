@@ -47,4 +47,21 @@ describe('LocalFileService', () => {
     if (fs.existsSync(nestedPath)) fs.unlinkSync(nestedPath);
     await expect(service.upload(testContent, nestedKey)).rejects.toThrow(BadRequestException);
   });
+
+  it('upload는 잘못된 파일 이름 거부', async () => {
+    const invalidKeys = [
+      'invalid/name.txt',
+      'invalid\\name.txt',
+      'invalid:name.txt',
+      'invalid*name.txt',
+      'invalid?name.txt',
+      'invalid"name.txt',
+      'invalid<name.txt',
+      'invalid>name.txt',
+      'invalid|name.txt',
+    ];
+    for (const key of invalidKeys) {
+      await expect(service.upload(testContent, key)).rejects.toThrow(BadRequestException);
+    }
+  });
 });
