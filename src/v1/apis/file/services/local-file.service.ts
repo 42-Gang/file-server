@@ -48,7 +48,7 @@ export default class LocalFileService implements FileService {
 
   getUrl(key: string): string {
     const normalizedBaseUrl = this.baseUrl.endsWith('/') ? this.baseUrl.slice(0, -1) : this.baseUrl;
-    return new URL(key, normalizedBaseUrl + '/uploads').toString();
+    return new URL(key, normalizedBaseUrl).toString();
   }
 
   private isValidFilename(filename: string): boolean {
