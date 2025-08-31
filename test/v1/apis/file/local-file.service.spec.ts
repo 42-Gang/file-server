@@ -27,7 +27,12 @@ describe('LocalFileService', () => {
   it('upload는 파일을 생성하고 URL을 반환한다', async () => {
     const result = await service.upload(testContent, testKey);
     expect(fs.existsSync(testPath)).toBe(true);
-    expect(result).toBe(`${baseUrl}/${testKey}`);
+    expect(result).toStrictEqual({
+      data: {
+        url: 'http://localhost:3000/test.txt',
+      },
+      status: 'SUCCESS',
+    });
     expect(fs.readFileSync(testPath).toString()).toBe('test message');
   });
 
@@ -41,5 +46,22 @@ describe('LocalFileService', () => {
     const nestedPath = path.join(baseDir, nestedKey);
     if (fs.existsSync(nestedPath)) fs.unlinkSync(nestedPath);
     await expect(service.upload(testContent, nestedKey)).rejects.toThrow(BadRequestException);
+  });
+
+  it('upload는 잘못된 파일 이름 거부', async () => {
+    const invalidKeys = [
+      'invalid/name.txt',
+      'invalid\\name.txt',
+      'invalid:name.txt',
+      'invalid*name.txt',
+      'invalid?name.txt',
+      'invalid"name.txt',
+      'invalid<name.txt',
+      'invalid>name.txt',
+      'invalid|name.txt',
+    ];
+    for (const key of invalidKeys) {
+      await expect(service.upload(testContent, key)).rejects.toThrow(BadRequestException);
+    }
   });
 });
