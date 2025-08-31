@@ -27,7 +27,12 @@ describe('LocalFileService', () => {
   it('upload는 파일을 생성하고 URL을 반환한다', async () => {
     const result = await service.upload(testContent, testKey);
     expect(fs.existsSync(testPath)).toBe(true);
-    expect(result).toBe(`${baseUrl}/${testKey}`);
+    expect(result).toStrictEqual({
+      data: {
+        url: 'http://localhost:3000/test.txt',
+      },
+      status: 'SUCCESS',
+    });
     expect(fs.readFileSync(testPath).toString()).toBe('test message');
   });
 
