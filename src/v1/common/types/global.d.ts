@@ -23,7 +23,7 @@ declare global {
 
       KAFKA_BROKER: string;
 
-      BASE_DRI: string;
+      BASE_DIR: string;
       BASE_URL: string;
     }
   }
