@@ -6,6 +6,8 @@ import { uploadResponseSchema } from '../schemas/upload.schema.js';
 import { STATUS } from '../../../common/constants/status.js';
 import { BadRequestException, ConflictException } from '../../../common/exceptions/core.error.js';
 
+const MAX_FILENAME_LEN = 255;
+
 export default class LocalFileService implements FileService {
   constructor(
     private readonly baseDir: string,
@@ -51,7 +53,7 @@ export default class LocalFileService implements FileService {
   private isValidFilename(filename: string): boolean {
     const invalidPattern = /[\/\\:*?"<>|]/;
 
-    if (255 < filename.length) {
+    if (MAX_FILENAME_LEN < filename.length) {
       return false;
     }
     if (invalidPattern.test(filename)) {
