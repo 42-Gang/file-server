@@ -50,6 +50,17 @@ export default class LocalFileService implements FileService {
 
   private isValidFilename(filename: string): boolean {
     const invalidPattern = /[\/\\:*?"<>|]/;
-    return !invalidPattern.test(filename) && filename.length <= 255;
+
+    if (255 < filename.length) {
+      return false;
+    }
+    if (invalidPattern.test(filename)) {
+      return false;
+    }
+    if (filename !== path.basename(filename)) {
+      return false;
+    }
+
+    return true;
   }
 }
